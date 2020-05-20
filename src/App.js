@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import WishListView from './components/WishListView';
 
 import { WishList } from './models/WishList';
+import { onSnapshot } from 'mobx-state-tree';
 
-// create the wish list
-const wishList = WishList.create({
+let initialState = {
   items: [
     {
       name: "LEGO Mindstorms EV3",
@@ -14,13 +14,24 @@ const wishList = WishList.create({
       name: "Miracles - C.S. Lewis",
       price: 12.91,
     }
-  ],
-});
+  ]
+}
 
-// change the price every second
-// setInterval(() => {
-//   wishList.items[0].changePrice(wishList.items[0].price + 1);
-// }, 1000);
+// check for the list in the local storage
+if(localStorage.getItem("wishlistapp")) {
+  initialState = JSON.parse(localStorage.getItem("wishlistapp"));
+}
+
+// create the wish list
+const wishList = WishList.create(initialState);
+
+// whenever there is a snapshot available, we gonna write it in local store
+onSnapshot(wishList, snapshot => {
+  const json = localStorage.setItem("wishlistapp", JSON.stringify(snapshot));
+
+  // check if the json from the storage is valid for our model (in case of change the model)
+  if(WishList.is(json)) initialState = json;
+});
 
 class App extends Component {
   render() {
