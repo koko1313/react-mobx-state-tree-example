@@ -39,6 +39,7 @@ class WishListItemView extends Component {
             <p>{item.price}</p>
 
             <button onClick={this.onToggleEdit}>Edit</button>
+            <button onClick={item.remove}>Remove</button>
         </li>;
     }
 

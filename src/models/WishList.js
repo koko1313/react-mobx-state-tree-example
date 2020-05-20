@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { types, getParent, destroy } from "mobx-state-tree";
 
 export const WishListItem = types
     .model({
@@ -10,6 +10,10 @@ export const WishListItem = types
         },
         changePrice(newPrice) {
             self.price = newPrice;
+        },
+        remove() {
+            // the second parameter - go 2 levels up
+            getParent(self, 2).remove(self);
         }
     }));
 
@@ -21,6 +25,10 @@ export const WishList = types
     .actions(self => ({
         add(item) {
             self.items.push(item);
+        },
+        remove(item) {
+            // self.items = self.items.filter(currentItem => currentItem !== item); // using filter
+            destroy(item); // using destroy
         }
     }))
     .views(self => ({
