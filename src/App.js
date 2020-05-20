@@ -17,6 +17,11 @@ const wishList = WishList.create({
   ],
 });
 
+// change the price every second
+setInterval(() => {
+  wishList.items[0].changePrice(wishList.items[0].price + 1);
+}, 1000);
+
 class App extends Component {
   render() {
     return <WishListView wishList={wishList} />;
