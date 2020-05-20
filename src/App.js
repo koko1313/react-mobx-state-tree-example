@@ -1,41 +1,74 @@
 import React, { Component } from 'react';
 import WishListView from './components/WishListView';
 
-import { WishList } from './models/WishList';
-import { onSnapshot } from 'mobx-state-tree';
+import { Group } from './models/Group';
+
+// import { WishList } from './models/WishList';
+// import { onSnapshot } from 'mobx-state-tree';
 
 let initialState = {
-  items: [
+  users: [
     {
-      name: "LEGO Mindstorms EV3",
-      price: 349.95,
+      id: "1",
+      name: "Homer",
+      gender: "m",
     },
     {
-      name: "Miracles - C.S. Lewis",
-      price: 12.91,
-    }
+      id: "2",
+      name: "Marge",
+      gender: "f",
+    },
+    {
+      id: "3",
+      name: "Bart",
+      gender: "m",
+    },
+    {
+      id: "4",
+      name: "Maggie",
+      gender: "f",
+    },
+    {
+      id: "5",
+      name: "Lissa",
+      gender: "f",
+    },
   ]
 }
 
-// check for the list in the local storage
-if(localStorage.getItem("wishlistapp")) {
-  initialState = JSON.parse(localStorage.getItem("wishlistapp"));
-}
+const group = Group.create(initialState);
 
-// create the wish list
-const wishList = WishList.create(initialState);
 
-// whenever there is a snapshot available, we gonna write it in local store
-onSnapshot(wishList, snapshot => {
-  const json = localStorage.setItem("wishlistapp", JSON.stringify(snapshot));
-
-  // check if the json from the storage is valid for our model (in case of change the model)
-  if(WishList.is(json)) initialState = json;
-});
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { selectedUser: null };
+  }
+
+  onSelectUser = event => {
+    this.setState({ selectedUser: event.target.value });
+  }
+
+  renderUsersOptions = () => {
+    return group.users.map(user => {
+      return <option key={user.id} value={user.id}>
+        {user.name}
+      </option>;
+    });
+  }
+
   render() {
-    return <WishListView wishList={wishList} />;
+    const selectedUser = group.users.get(this.state.selectedUser);
+
+    return <>
+      <select onChange={this.onSelectUser}>
+        <option>- Select user -</option>
+        {this.renderUsersOptions()}
+      </select>
+
+      {selectedUser && <WishListView wishList={selectedUser.wishList} />}
+    </>;
   }
 }
 
