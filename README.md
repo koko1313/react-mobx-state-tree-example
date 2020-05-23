@@ -1,1 +1,1 @@
-# react-mobx-state-tree example
+# React mobx-state-tree example
